@@ -1,0 +1,21 @@
+services:
+  api:
+    build: ./app
+    ports:
+      - "3004:3000"
+    environment:
+      - MONGO_URL=mongodb://db:27017/docs
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: mongo:6
+    volumes:
+      - doc-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+volumes:
+  doc-data:
