@@ -1,0 +1,21 @@
+services:
+  api:
+    build: ./app
+    ports:
+      - "3006:3000"
+    environment:
+      - MONGO_URI=mongodb://db:27017/dashboard
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: mongo:6
+    volumes:
+      - dash-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  dash-data:
