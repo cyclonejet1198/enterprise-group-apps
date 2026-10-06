@@ -2,51 +2,19 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const app = express();
-app.use(cors());
-app.use(express.json());
+app.use(cors()); app.use(express.json());
 
-const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017/docs';
-mongoose.connect(MONGO_URL).then(() => console.log('Mongo Connected')).catch(e => console.error(e));
+mongoose.connect(process.env.MONGO_URI || 'mongodb://db:27017/docs').then(()=>console.log('Docs DB OK'));
 
-// === BLUEPRINTS (Tables from Power Apps idea) ===
-const Document = mongoose.model('Document', new mongoose.Schema({
-  title: String,
-  type: { type: String, enum: ['contract','invoice','report','policy','other'] },
-  owner: String,
-  department: String,
-  fileUrl: String,
-  relatedTo: { id: String, collection: String },
-  status: { type: String, default: 'active' },
-  expiryDate: Date,
-  createdAt: { type: Date, default: Date.now }
+const Doc = mongoose.model('Doc', new mongoose.Schema({
+  title: String, type: String, status: {type:String, default:'draft'}, createdAt:{type:Date, default:Date.now}
 }));
 
-const Version = mongoose.model('Version', new mongoose.Schema({
-  docId: { type: mongoose.Schema.Types.ObjectId, ref: 'Document' },
-  version: Number,
-  changedBy: String,
-  notes: String,
-  date: { type: Date, default: Date.now }
-}));
+app.get('/', (req,res)=>res.json({status:'Document Platform Running', port:3004, blueprints:['Documents','Versions'], count: 'use /docs'}));
+app.get('/health', (req,res)=>res.json({status:'ok', service:'04-documents'}));
+app.get('/docs', async (req,res)=> res.json(await Doc.find()));
+app.post('/docs', async (req,res)=> res.json(await Doc.create(req.body)));
+app.delete('/docs/:id', async (req,res)=> res.json(await Doc.findByIdAndDelete(req.params.id)));
+app.get('/stats', async (req,res)=> res.json({total: await Doc.countDocuments()}));
 
-// === API ===
-app.get('/', (req,res) => res.json({ status: 'Doc Tracking Platform Running', blueprints: ['Documents','Versions'] }));
-
-app.get('/documents', async (req,res) => {
-  const docs = await Document.find();
-  res.json(docs);
-});
-
-app.post('/documents', async (req,res) => {
-  const doc = new Document(req.body);
-  await doc.save();
-  res.json(doc);
-});
-
-app.get('/documents/expiring', async (req,res) => {
-  const soon = new Date(); soon.setDate(soon.getDate() + 30);
-  const docs = await Document.find({ expiryDate: { $lte: soon } });
-  res.json(docs);
-});
-
-app.listen(3000, () => console.log('API on 3000'));
+app.listen(3000, ()=>console.log('04 running 3000->3004'));

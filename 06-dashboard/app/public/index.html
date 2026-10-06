@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Enterprise Group - Platform Suite</title>
+<style>
+body{font-family:Arial;background:#f4f4f5;padding:20px}
+.card{background:white;padding:20px;border-radius:12px;margin:10px 0;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.badge{padding:4px 10px;border-radius:20px;background:#22c55e;color:white;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+button{padding:8px 14px;border:0;background:#111;color:white;border-radius:6px;cursor:pointer}
+input{padding:8px;width:70%;border:1px solid #ddd;border-radius:6px}
+pre{background:#111;color:#0f0;padding:10px;border-radius:6px;overflow:auto}
+</style>
+</head>
+<body>
+<h1>🏢 Enterprise Group - 6 Platform Suite</h1>
+<p>EP-C19-L01 | Yaw Bremang Acquah | <span class="badge">LIVE</span></p>
+
+<div class="grid">
+<div class="card"><h3>📄 04-Documents :3004</h3><p id="s04">loading...</p><button onclick="load04()">Refresh</button><pre id="p04"></pre></div>
+<div class="card"><h3>🛒 05-Procurement :3005</h3><p id="s05">loading...</p><button onclick="load05()">Refresh</button><pre id="p05"></pre></div>
+<div class="card"><h3>📊 06-Dashboard :3006</h3><p id="s06">loading...</p><button onclick="load06()">Refresh</button><pre id="p06"></pre></div>
+</div>
+
+<div class="card">
+<h3>Quick Test (Postman-style in browser)</h3>
+<input id="url" value="http://localhost:3006/summary"> 
+<button onclick="testUrl()">GET</button>
+<pre id="result"></pre>
+</div>
+
+<div class="card">
+<h3>✅ Project Status</h3>
+<ul>
+<li>01-event: Planned</li>
+<li>02-facility: Planned</li>
+<li>03-inventory: Planned</li>
+<li>04-documents: <b>RUNNING on 3004</b></li>
+<li>05-procurement: <b>RUNNING on 3005</b></li>
+<li>06-dashboard: <b>RUNNING on 3006</b></li>
+</ul>
+</div>
+
+<script>
+async function fetchJson(url, elStatus, elPre){
+ try{
+  let r = await fetch(url); let j = await r.json();
+  document.getElementById(elStatus).innerHTML = '<span class="badge">UP</span> '+r.status;
+  document.getElementById(elPre).textContent = JSON.stringify(j,null,2);
+  return j;
+ }catch(e){
+  document.getElementById(elStatus).innerHTML = '<span style="background:red" class="badge">DOWN</span>';
+  document.getElementById(elPre).textContent = e;
+ }
+}
+function load04(){fetchJson('http://localhost:3004','s04','p04')}
+function load05(){fetchJson('http://localhost:3005','s05','p05')}
+function load06(){fetchJson('http://localhost:3006/summary','s06','p06')}
+async function testUrl(){
+ let u = document.getElementById('url').value;
+ let r = await fetch(u); let t = await r.text();
+ document.getElementById('result').textContent = t;
+}
+load04();load05();load06();
+</script>
+</body>
+</html>

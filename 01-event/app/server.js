@@ -1,0 +1,14 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const app = express();
+app.use(cors()); app.use(express.json());
+app.use(express.static(require('path').join(__dirname,'public')));
+mongoose.connect(process.env.MONGO_URI || 'mongodb://db:27017/01-event').then(()=>console.log('01-event DB OK'));
+const Item = mongoose.model('Item', new mongoose.Schema({name:String, status:{type:String, default:'active'}, createdAt:{type:Date, default:Date.now}}));
+app.get('/', (req,res)=>res.json({status:'01-event Platform Running', port:3001}));
+app.get('/health', (req,res)=>res.json({status:'ok', service:'01-event'}));
+app.get('/items', async (req,res)=>res.json(await Item.find()));
+app.post('/items', async (req,res)=>res.json(await Item.create(req.body)));
+app.get('/stats', async (req,res)=>res.json({total: await Item.countDocuments()}));
+app.listen(3000, ()=>console.log('01-event running 3000->3001'));

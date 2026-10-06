@@ -1,0 +1,14 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const app = express();
+app.use(cors()); app.use(express.json());
+app.use(express.static(require('path').join(__dirname,'public')));
+mongoose.connect(process.env.MONGO_URI || 'mongodb://db:27017/02-facility').then(()=>console.log('02-facility DB OK'));
+const Item = mongoose.model('Item', new mongoose.Schema({name:String, status:{type:String, default:'active'}, createdAt:{type:Date, default:Date.now}}));
+app.get('/', (req,res)=>res.json({status:'02-facility Platform Running', port:3002}));
+app.get('/health', (req,res)=>res.json({status:'ok', service:'02-facility'}));
+app.get('/items', async (req,res)=>res.json(await Item.find()));
+app.post('/items', async (req,res)=>res.json(await Item.create(req.body)));
+app.get('/stats', async (req,res)=>res.json({total: await Item.countDocuments()}));
+app.listen(3000, ()=>console.log('02-facility running 3000->3002'));
