@@ -1,0 +1,22 @@
+services:
+  api:
+    build: ./app
+    ports:
+      - "3005:3000"
+    environment:
+      - MONGO_URI=mongodb://db:27017/procurement
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: mongo:6
+    volumes:
+      - proc-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  proc-data:
