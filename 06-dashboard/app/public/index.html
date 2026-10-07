@@ -1,76 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Enterprise Group - 6 Platform Suite</title>
-<style>
-body{font-family:Inter,Arial;background:#f4f4f5;padding:20px;color:#111}
-.card{background:white;padding:20px;border-radius:12px;margin:10px 0;box-shadow:0 2px 8px rgba(0,0,0,.1)}
-.badge{padding:4px 10px;border-radius:20px;background:#22c55e;color:white;font-size:12px}
-.badge-red{background:#ef4444}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
-@media(max-width:900px){.grid{grid-template-columns:1fr}}
-button{padding:8px 14px;border:0;background:#111;color:white;border-radius:6px;cursor:pointer;margin:2px}
-button:hover{background:#333}
-input{padding:8px;width:65%;border:1px solid #ddd;border-radius:6px;margin:2px}
-pre{background:#111;color:#0f0;padding:10px;border-radius:6px;overflow:auto;max-height:200px;font-size:11px}
-a{color:#2563eb;text-decoration:none}
-</style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Enterprise Group - Platform Ops | EP-C19-L01</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>body{font-family:'Inter',sans-serif}</style>
 </head>
-<body>
-<h1>🏢 Enterprise Group - 6 Platform Suite</h1>
-<p>EP-C19-L01 | Yaw Bremang Acquah | <span class="badge" id="mainBadge">LIVE</span> | <a href="https://github.com/cyclonejet1198/enterprise-group-apps" target="_blank">GitHub</a></p>
-<div class="grid">
-<div class="card"><h3>🎉 01-Event :3001</h3><p id="s01">loading...</p><a href="http://localhost:3001" target="_blank"><button>Open UI</button></a><pre id="p01"></pre></div>
-<div class="card"><h3>🏢 02-Facility :3002</h3><p id="s02">loading...</p><a href="http://localhost:3002" target="_blank"><button>Open UI</button></a><pre id="p02"></pre></div>
-<div class="card"><h3>📦 03-Inventory :3003</h3><p id="s03">loading...</p><a href="http://localhost:3003" target="_blank"><button>Open UI</button></a><pre id="p03"></pre></div>
-<div class="card"><h3>📄 04-Documents :3004</h3><p id="s04">loading...</p><button onclick="load04()">Refresh</button> <a href="http://localhost:3004" target="_blank"><button>Open UI</button></a>
-<div style="margin-top:10px"><input id="docTitle" placeholder="New doc title"><button onclick="createDoc()">+ Create</button></div><pre id="p04"></pre></div>
-<div class="card"><h3>🛒 05-Procurement :3005</h3><p id="s05">loading...</p><button onclick="load05()">Refresh</button> <a href="http://localhost:3005" target="_blank"><button>Open UI</button></a>
-<div style="margin-top:10px"><input id="procTitle" placeholder="New request title"><button onclick="createProc()">+ Create</button></div><pre id="p05"></pre></div>
-<div class="card"><h3>📊 06-Dashboard :3006</h3><p id="s06">loading...</p><button onclick="loadSummary()">Refresh Summary</button><pre id="p06"></pre></div>
+<body class="bg-[#f6f8fb] min-h-screen">
+<!-- Header -->
+<div class="bg-[#0a1931] text-white px-6 py-4 flex justify-between items-center shadow">
+  <div class="flex items-center gap-3">
+    <div class="w-9 h-9 bg-white rounded-lg flex items-center justify-center text-[#0a1931] font-black">EG</div>
+    <div><h1 class="font-bold tracking-wide">ENTERPRISE GROUP GHANA</h1><p class="text-xs text-blue-200">Unified Platform Control • enterprise-net • EP-C19-L01</p></div>
+  </div>
+  <div class="text-right"><p class="text-sm">Yaw Bremang Acquah</p><p class="text-xs text-green-400">● 6/6 Systems Operational</p></div>
 </div>
-<div class="card"><h3>🧪 Live Summary ( /summary )</h3><pre id="result">loading...</pre></div>
+
+<div class="p-6 max-w-7xl mx-auto">
+  <!-- Metrics -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-xl p-4 shadow border-l-4 border-green-500"><p class="text-xs text-gray-500">PLATFORMS</p><p class="text-2xl font-bold" id="m-platforms">6/6</p></div>
+    <div class="bg-white rounded-xl p-4 shadow border-l-4 border-blue-500"><p class="text-xs text-gray-500">DOCUMENTS</p><p class="text-2xl font-bold" id="m-docs">0</p></div>
+    <div class="bg-white rounded-xl p-4 shadow border-l-4 border-orange-500"><p class="text-xs text-gray-500">PROCUREMENT</p><p class="text-2xl font-bold" id="m-proc">0</p></div>
+    <div class="bg-white rounded-xl p-4 shadow border-l-4 border-purple-500"><p class="text-xs text-gray-500">NETWORK</p><p class="text-sm font-mono mt-1">enterprise-net<br><span class="text-xs text-gray-400" id="m-time">...</span></p></div>
+  </div>
+
+  <!-- Cards -->
+  <div class="grid md:grid-cols-3 gap-4" id="cards"></div>
+
+  <!-- Actions -->
+  <div class="mt-8 bg-white rounded-xl p-5 shadow">
+    <h3 class="font-bold mb-4">Production Actions</h3>
+    <div class="flex flex-wrap gap-3">
+      <button onclick="createDoc()" class="bg-[#0a1931] text-white px-5 py-2.5 rounded-lg text-sm hover:bg-black">+ Create Document (/docs)</button>
+      <button onclick="createProc()" class="bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm hover:bg-blue-700">+ Create Procurement</button>
+      <button onclick="load()" class="bg-gray-100 px-5 py-2.5 rounded-lg text-sm">↻ Refresh Summary</button>
+      <a href="/summary" target="_blank" class="bg-gray-100 px-5 py-2.5 rounded-lg text-sm">View Raw /summary JSON</a>
+    </div>
+    <p class="text-xs text-gray-400 mt-3">Backend note: APIs are stateless on port 3000 inside, exposed as 3001-3006. Scale: <code>docker compose up --scale 01-event-api=3</code> • Next: K8s + Atlas + Redis cache</p>
+  </div>
+</div>
+
 <script>
-async function fetchPlatform(url, elStatus, elPre){
- try{
-  let r = await fetch(url); let j = await r.json();
-  let up = j.up !== undefined ? j.up : true;
-  let badge = up ? '<span class="badge">UP</span>' : '<span class="badge badge-red">DOWN</span>';
-  document.getElementById(elStatus).innerHTML = badge + ' ' + r.status;
-  document.getElementById(elPre).textContent = JSON.stringify(j,null,2);
-  return j;
- }catch(e){
-  document.getElementById(elStatus).innerHTML = '<span class="badge badge-red">DOWN</span>';
-  document.getElementById(elPre).textContent = e;
-  return {up:false};
- }
-}
-async function loadSummary(){
+const PLATFORMS = [
+ {id:'01-event', name:'Event Management', port:3001, icon:'📅', desc:'Events, Scheduling'},
+ {id:'02-facility', name:'Facility Ops', port:3002, icon:'🏢', desc:'Buildings, Maintenance'},
+ {id:'03-inventory', name:'Inventory', port:3003, icon:'📦', desc:'Stock, Assets'},
+ {id:'04-documents', name:'Documents', port:3004, icon:'📄', desc:'Docs, Versions - endpoint /docs'},
+ {id:'05-procurement', name:'Procurement', port:3005, icon:'🛒', desc:'Requests, Approvals'},
+ {id:'06-dashboard', name:'Dashboard', port:3006, icon:'📊', desc:'Ops Control - This UI'},
+];
+
+async function load(){
   try{
-    let r = await fetch('/summary'); let j = await r.json();
-    document.getElementById('result').textContent = JSON.stringify(j,null,2);
-    document.getElementById('s06').innerHTML = '<span class="badge">UP</span> '+ j.running.length +'/6 running';
-    document.getElementById('p06').textContent = j.running.join('\n');
-    document.getElementById('mainBadge').textContent = j.running.length + '/6 LIVE';
-  }catch(e){ document.getElementById('result').textContent = e }
+    const res = await fetch('/summary'); const data = await res.json();
+    document.getElementById('m-docs').textContent = data.live_counts.documents;
+    document.getElementById('m-proc').textContent = data.live_counts.procurement;
+    document.getElementById('m-time').textContent = new Date(data.timestamp).toLocaleTimeString();
+    const cardsDiv = document.getElementById('cards');
+    cardsDiv.innerHTML = PLATFORMS.map(p=>{
+      const isUp = data.running.includes(`${p.id}:${p.port}`) || p.id==='06-dashboard';
+      const detail = data.platforms[p.id];
+      return `<div class="bg-white rounded-xl p-5 shadow hover:shadow-md transition border ${isUp?'border-green-200':'border-red-200'}">
+        <div class="flex justify-between"><span class="text-2xl">${p.icon}</span><span class="text-xs px-2 py-1 rounded-full ${isUp?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${isUp?'● LIVE': '○ DOWN'}</span></div>
+        <h3 class="font-bold mt-2">${p.name}</h3><p class="text-xs text-gray-500">${p.desc}</p>
+        <div class="mt-3 text-xs font-mono bg-gray-50 p-2 rounded">:${p.port} → ${p.id}-api:3000<br>up: ${isUp} ${detail? '| total:'+ (detail.data.total ?? 'ok'):''}</div>
+      </div>`;
+    }).join('');
+  }catch(e){ console.error(e) }
 }
-function load04(){ fetchPlatform('http://localhost:3004/stats','s04','p04') }
-function load05(){ fetchPlatform('http://localhost:3005/stats','s05','p05') }
-async function load01(){ fetchPlatform('http://localhost:3001/health','s01','p01') }
-async function load02(){ fetchPlatform('http://localhost:3002/health','s02','p02') }
-async function load03(){ fetchPlatform('http://localhost:3003/health','s03','p03') }
 async function createDoc(){
-  let title = document.getElementById('docTitle').value || 'Test Doc '+Date.now();
-  let r = await fetch('/api/create-document',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title, type:'report', content:'Created from dashboard 3006'})});
-  let j = await r.json(); alert('Doc created: '+JSON.stringify(j)); load04(); loadSummary();
+  const title=prompt('Document Title:','Enterprise Report '+Date.now());
+  if(!title) return;
+  await fetch('/api/create-document',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,type:'report'})});
+  load();
 }
 async function createProc(){
-  let title = document.getElementById('procTitle').value || 'Test Req '+Date.now();
-  let r = await fetch('/api/create-procurement',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title, amount:1000, description:'Created from dashboard 3006'})});
-  let j = await r.json(); alert('Procurement created: '+JSON.stringify(j)); load05(); loadSummary();
+  const title=prompt('Procurement Title:','Office Supplies '+Date.now());
+  if(!title) return;
+  await fetch('/api/create-procurement',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,amount:5000})});
+  load();
 }
-load01();load02();load03();load04();load05();loadSummary();
-setInterval(loadSummary, 10000);
+load(); setInterval(load, 4000);
 </script>
 </body>
 </html>
