@@ -1,12 +1,11 @@
-version: '3.8'
 services:
   api:
     build: ./app
-    container_name: 04-documents-api-1
+    container_name: 04-documents-api
     ports:
       - "3004:3000"
     environment:
-      - MONGO_URI=mongodb://db:27017/docs
+      - MONGO_URI=mongodb://db:27017/04-documents
     depends_on:
       db:
         condition: service_healthy
@@ -14,7 +13,7 @@ services:
       - enterprise-net
   db:
     image: mongo:6
-    container_name: 04-documents-db-1
+    container_name: 04-documents-db
     networks:
       - enterprise-net
     healthcheck:

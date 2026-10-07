@@ -1,67 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Enterprise Group - Platform Suite</title>
+<title>Enterprise Group - 6 Platform Suite</title>
 <style>
-body{font-family:Arial;background:#f4f4f5;padding:20px}
+body{font-family:Inter,Arial;background:#f4f4f5;padding:20px;color:#111}
 .card{background:white;padding:20px;border-radius:12px;margin:10px 0;box-shadow:0 2px 8px rgba(0,0,0,.1)}
 .badge{padding:4px 10px;border-radius:20px;background:#22c55e;color:white;font-size:12px}
+.badge-red{background:#ef4444}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
-button{padding:8px 14px;border:0;background:#111;color:white;border-radius:6px;cursor:pointer}
-input{padding:8px;width:70%;border:1px solid #ddd;border-radius:6px}
-pre{background:#111;color:#0f0;padding:10px;border-radius:6px;overflow:auto}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+button{padding:8px 14px;border:0;background:#111;color:white;border-radius:6px;cursor:pointer;margin:2px}
+button:hover{background:#333}
+input{padding:8px;width:65%;border:1px solid #ddd;border-radius:6px;margin:2px}
+pre{background:#111;color:#0f0;padding:10px;border-radius:6px;overflow:auto;max-height:200px;font-size:11px}
+a{color:#2563eb;text-decoration:none}
 </style>
 </head>
 <body>
 <h1>🏢 Enterprise Group - 6 Platform Suite</h1>
-<p>EP-C19-L01 | Yaw Bremang Acquah | <span class="badge">LIVE</span></p>
-
+<p>EP-C19-L01 | Yaw Bremang Acquah | <span class="badge" id="mainBadge">LIVE</span> | <a href="https://github.com/cyclonejet1198/enterprise-group-apps" target="_blank">GitHub</a></p>
 <div class="grid">
-<div class="card"><h3>📄 04-Documents :3004</h3><p id="s04">loading...</p><button onclick="load04()">Refresh</button><pre id="p04"></pre></div>
-<div class="card"><h3>🛒 05-Procurement :3005</h3><p id="s05">loading...</p><button onclick="load05()">Refresh</button><pre id="p05"></pre></div>
-<div class="card"><h3>📊 06-Dashboard :3006</h3><p id="s06">loading...</p><button onclick="load06()">Refresh</button><pre id="p06"></pre></div>
+<div class="card"><h3>🎉 01-Event :3001</h3><p id="s01">loading...</p><a href="http://localhost:3001" target="_blank"><button>Open UI</button></a><pre id="p01"></pre></div>
+<div class="card"><h3>🏢 02-Facility :3002</h3><p id="s02">loading...</p><a href="http://localhost:3002" target="_blank"><button>Open UI</button></a><pre id="p02"></pre></div>
+<div class="card"><h3>📦 03-Inventory :3003</h3><p id="s03">loading...</p><a href="http://localhost:3003" target="_blank"><button>Open UI</button></a><pre id="p03"></pre></div>
+<div class="card"><h3>📄 04-Documents :3004</h3><p id="s04">loading...</p><button onclick="load04()">Refresh</button> <a href="http://localhost:3004" target="_blank"><button>Open UI</button></a>
+<div style="margin-top:10px"><input id="docTitle" placeholder="New doc title"><button onclick="createDoc()">+ Create</button></div><pre id="p04"></pre></div>
+<div class="card"><h3>🛒 05-Procurement :3005</h3><p id="s05">loading...</p><button onclick="load05()">Refresh</button> <a href="http://localhost:3005" target="_blank"><button>Open UI</button></a>
+<div style="margin-top:10px"><input id="procTitle" placeholder="New request title"><button onclick="createProc()">+ Create</button></div><pre id="p05"></pre></div>
+<div class="card"><h3>📊 06-Dashboard :3006</h3><p id="s06">loading...</p><button onclick="loadSummary()">Refresh Summary</button><pre id="p06"></pre></div>
 </div>
-
-<div class="card">
-<h3>Quick Test (Postman-style in browser)</h3>
-<input id="url" value="http://localhost:3006/summary"> 
-<button onclick="testUrl()">GET</button>
-<pre id="result"></pre>
-</div>
-
-<div class="card">
-<h3>✅ Project Status</h3>
-<ul>
-<li>01-event: Planned</li>
-<li>02-facility: Planned</li>
-<li>03-inventory: Planned</li>
-<li>04-documents: <b>RUNNING on 3004</b></li>
-<li>05-procurement: <b>RUNNING on 3005</b></li>
-<li>06-dashboard: <b>RUNNING on 3006</b></li>
-</ul>
-</div>
-
+<div class="card"><h3>🧪 Live Summary ( /summary )</h3><pre id="result">loading...</pre></div>
 <script>
-async function fetchJson(url, elStatus, elPre){
+async function fetchPlatform(url, elStatus, elPre){
  try{
   let r = await fetch(url); let j = await r.json();
-  document.getElementById(elStatus).innerHTML = '<span class="badge">UP</span> '+r.status;
+  let up = j.up !== undefined ? j.up : true;
+  let badge = up ? '<span class="badge">UP</span>' : '<span class="badge badge-red">DOWN</span>';
+  document.getElementById(elStatus).innerHTML = badge + ' ' + r.status;
   document.getElementById(elPre).textContent = JSON.stringify(j,null,2);
   return j;
  }catch(e){
-  document.getElementById(elStatus).innerHTML = '<span style="background:red" class="badge">DOWN</span>';
+  document.getElementById(elStatus).innerHTML = '<span class="badge badge-red">DOWN</span>';
   document.getElementById(elPre).textContent = e;
+  return {up:false};
  }
 }
-function load04(){fetchJson('http://localhost:3004','s04','p04')}
-function load05(){fetchJson('http://localhost:3005','s05','p05')}
-function load06(){fetchJson('http://localhost:3006/summary','s06','p06')}
-async function testUrl(){
- let u = document.getElementById('url').value;
- let r = await fetch(u); let t = await r.text();
- document.getElementById('result').textContent = t;
+async function loadSummary(){
+  try{
+    let r = await fetch('/summary'); let j = await r.json();
+    document.getElementById('result').textContent = JSON.stringify(j,null,2);
+    document.getElementById('s06').innerHTML = '<span class="badge">UP</span> '+ j.running.length +'/6 running';
+    document.getElementById('p06').textContent = j.running.join('\n');
+    document.getElementById('mainBadge').textContent = j.running.length + '/6 LIVE';
+  }catch(e){ document.getElementById('result').textContent = e }
 }
-load04();load05();load06();
+function load04(){ fetchPlatform('http://localhost:3004/stats','s04','p04') }
+function load05(){ fetchPlatform('http://localhost:3005/stats','s05','p05') }
+async function load01(){ fetchPlatform('http://localhost:3001/health','s01','p01') }
+async function load02(){ fetchPlatform('http://localhost:3002/health','s02','p02') }
+async function load03(){ fetchPlatform('http://localhost:3003/health','s03','p03') }
+async function createDoc(){
+  let title = document.getElementById('docTitle').value || 'Test Doc '+Date.now();
+  let r = await fetch('/api/create-document',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title, type:'report', content:'Created from dashboard 3006'})});
+  let j = await r.json(); alert('Doc created: '+JSON.stringify(j)); load04(); loadSummary();
+}
+async function createProc(){
+  let title = document.getElementById('procTitle').value || 'Test Req '+Date.now();
+  let r = await fetch('/api/create-procurement',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title, amount:1000, description:'Created from dashboard 3006'})});
+  let j = await r.json(); alert('Procurement created: '+JSON.stringify(j)); load05(); loadSummary();
+}
+load01();load02();load03();load04();load05();loadSummary();
+setInterval(loadSummary, 10000);
 </script>
 </body>
 </html>

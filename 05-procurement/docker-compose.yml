@@ -1,12 +1,11 @@
-version: '3.8'
 services:
   api:
     build: ./app
-    container_name: 05-procurement-api-1
+    container_name: 05-procurement-api
     ports:
       - "3005:3000"
     environment:
-      - MONGO_URI=mongodb://db:27017/procurement
+      - MONGO_URI=mongodb://db:27017/05-procurement
     depends_on:
       db:
         condition: service_healthy
@@ -14,7 +13,7 @@ services:
       - enterprise-net
   db:
     image: mongo:6
-    container_name: 05-procurement-db-1
+    container_name: 05-procurement-db
     networks:
       - enterprise-net
     healthcheck:

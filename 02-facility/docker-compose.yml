@@ -1,8 +1,7 @@
-version: '3.8'
 services:
   api:
     build: ./app
-    container_name: 02-facility-api-1
+    container_name: 02-facility-api
     ports:
       - "3002:3000"
     environment:
@@ -14,7 +13,7 @@ services:
       - enterprise-net
   db:
     image: mongo:6
-    container_name: 02-facility-db-1
+    container_name: 02-facility-db
     networks:
       - enterprise-net
     healthcheck:
