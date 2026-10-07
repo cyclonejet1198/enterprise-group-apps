@@ -6,7 +6,7 @@ services:
     networks:
       - enterprise-net
     environment:
-      - REDIS_URL=redis://dashboard-redis:6379
+      - REDIS_URL=redis://redis:6379
     depends_on:
       db:
         condition: service_healthy
