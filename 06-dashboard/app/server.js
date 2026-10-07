@@ -22,7 +22,6 @@ app.get('/summary', async (req,res)=>{
     safeFetch('http://04-documents-api:3000/stats'),
     safeFetch('http://05-procurement-api:3000/stats')
   ]);
-
   res.json({
     total_platforms: 6,
     running: [
@@ -34,19 +33,11 @@ app.get('/summary', async (req,res)=>{
       "06-dashboard:3006"
     ].filter(Boolean),
     live_counts: {
-      events: e1.up,
-      facility: e2.up,
-      inventory: e3.up,
+      events: e1.up, facility: e2.up, inventory: e3.up,
       documents: e4.up ? e4.data.total : 0,
       procurement: e5.up ? e5.data.total : 0
     },
-    platforms: {
-      "01-event": e1,
-      "02-facility": e2,
-      "03-inventory": e3,
-      "04-documents": e4,
-      "05-procurement": e5
-    },
+    platforms: { "01-event": e1, "02-facility": e2, "03-inventory": e3, "04-documents": e4, "05-procurement": e5 },
     timestamp: new Date().toISOString(),
     network: "enterprise-net",
     engineer: "Yaw Bremang Acquah - EP-C19-L01"
@@ -55,28 +46,22 @@ app.get('/summary', async (req,res)=>{
 
 app.post('/api/create-document', async (req,res)=>{
   try{
-    const r = await fetch('http://04-documents-api:3000/documents', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(req.body)
+    const r = await fetch('http://04-documents-api:3000/docs', {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(req.body)
     });
-    const j = await r.json();
-    res.json(j);
+    const j = await r.json(); res.json(j);
   }catch(e){ res.status(500).json({error:e.message}) }
 });
 
 app.post('/api/create-procurement', async (req,res)=>{
   try{
     const r = await fetch('http://05-procurement-api:3000/requests', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(req.body)
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(req.body)
     });
-    const j = await r.json();
-    res.json(j);
+    const j = await r.json(); res.json(j);
   }catch(e){ res.status(500).json({error:e.message}) }
 });
 
 app.get('/health', (req,res)=>res.json({status:'ok', platform:'06-dashboard'}));
 app.get('/', (req,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
-app.listen(3000, ()=>console.log('06 live on enterprise-net - full 6 platform view'));
+app.listen(3000, ()=>console.log('06 live - enterprise-net - FIXED /docs'));
